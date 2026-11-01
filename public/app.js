@@ -217,6 +217,17 @@ const TRANSLATIONS = {
     endgameBtnShare: "Share Results",
     endgameShareSub: "Copy your match results & board score to share",
     endgameShareCopied: "Results copied to clipboard!",
+    sharedResultModalBadge: "MATCH OUTCOME",
+    sharedResultModalTitle: "RIFT POSSESSION",
+    sharedResultSoloTitle: "SOLO-BOLO CHALLENGE",
+    sharedResultDailyTitle: "DAILY SOLO CHALLENGE",
+    sharedResultDuelTitle: "RIFT DUEL",
+    sharedResultScoreLabel: "Score: {score} Points",
+    sharedResultCleared: "37/37 Hexes Cleared",
+    sharedResultWinnerBlue: "BLUE SIDE VICTORY",
+    sharedResultWinnerRed: "RED SIDE VICTORY",
+    sharedResultDraw: "STALEMATE DRAW",
+    sharedResultPlayNow: "PLAY RIFT POSSESSION",
     endgameBtnMenu: "Back to the Menu",
     endgameMenuSub: "Exit session and return to game modes",
     footerFollowHeading: "FOLLOW US FOR MORE GAMES",
@@ -571,6 +582,17 @@ const TRANSLATIONS = {
     endgameBtnShare: "Sonuçları Paylaş",
     endgameShareSub: "Maç sonucunu ve hex skorunu kopyala",
     endgameShareCopied: "Sonuçlar panoya kopyalandı!",
+    sharedResultModalBadge: "MAÇ SONUCU",
+    sharedResultModalTitle: "RIFT POSSESSION",
+    sharedResultSoloTitle: "SOLO-BOLO MÜCADELESİ",
+    sharedResultDailyTitle: "GÜNLÜK SOLO MÜCADELE",
+    sharedResultDuelTitle: "VADİ DÜELLOSU",
+    sharedResultScoreLabel: "Skor: {score} Puan",
+    sharedResultCleared: "37/37 Hex Tamamlandı",
+    sharedResultWinnerBlue: "MAVİ TAKIM KAZANDI",
+    sharedResultWinnerRed: "KIRMIZI TAKIM KAZANDI",
+    sharedResultDraw: "BERABERE",
+    sharedResultPlayNow: "RIFT POSSESSION OYNA",
     endgameBtnMenu: "Menüye Dön",
     endgameMenuSub: "Oturumdan çık ve oyun modları ekranına dön",
     footerFollowHeading: "DAHA FAZLA OYUN İÇİN BİZİ TAKİP EDİN",
@@ -925,6 +947,17 @@ const TRANSLATIONS = {
     endgameBtnShare: "결과 공유",
     endgameShareSub: "경기 결과 및 점수를 클립보드에 복사",
     endgameShareCopied: "결과가 클립보드에 복사되었습니다!",
+    sharedResultModalBadge: "경기 결과",
+    sharedResultModalTitle: "RIFT POSSESSION",
+    sharedResultSoloTitle: "솔로-볼로 챌린지",
+    sharedResultDailyTitle: "일일 솔로 챌린지",
+    sharedResultDuelTitle: "협곡 결투",
+    sharedResultScoreLabel: "점수: {score}점",
+    sharedResultCleared: "37개 헥스 클리어",
+    sharedResultWinnerBlue: "블루 진영 승리",
+    sharedResultWinnerRed: "레드 진영 승리",
+    sharedResultDraw: "무승부",
+    sharedResultPlayNow: "RIFT POSSESSION 플레이하기",
     endgameBtnMenu: "메뉴로 돌아가기",
     endgameMenuSub: "경기를 종료하고 게임 모드 선택 화면으로 이동합니다",
     footerFollowHeading: "더 많은 게임을 위해 팔로우하세요",
@@ -1312,6 +1345,18 @@ const btnMenuRestart = document.getElementById('btn-menu-restart');
 const btnMenuExit = document.getElementById('btn-menu-exit');
 const menuRestartSub = document.getElementById('menu-restart-sub');
 const menuRestartBadge = document.getElementById('menu-restart-badge');
+
+// Shared Game Result Modal Elements
+const sharedResultModal = document.getElementById('shared-result-modal');
+const sharedResultBadge = document.getElementById('shared-result-badge');
+const sharedResultTitle = document.getElementById('shared-result-title');
+const sharedResultSubtitle = document.getElementById('shared-result-subtitle');
+const sharedHeroIcon = document.getElementById('shared-hero-icon');
+const sharedHeroHeadline = document.getElementById('shared-hero-headline');
+const sharedHeroDetails = document.getElementById('shared-hero-details');
+const sharedResultTags = document.getElementById('shared-result-tags');
+const btnSharedPlayNow = document.getElementById('btn-shared-play-now');
+const btnCloseSharedResult = document.getElementById('btn-close-shared-result');
 
 let currentMode = 'same_screen'; // 'same_screen', 'online_summoners', 'online_friend', 'solo'
 let championPool = [];
@@ -3606,29 +3651,47 @@ if (btnEndgameShare) {
     const lang = currentLanguage || 'en';
     const t = (k) => (TRANSLATIONS[lang] && TRANSLATIONS[lang][k]) || (TRANSLATIONS['en'] && TRANSLATIONS['en'][k]) || '';
     
-    // Construct match summary for sharing
+    // Construct match summary and direct outcome link for sharing
     let shareText = '';
+    let directResultUrl = window.location.origin;
     const isSolo = (lastGameOverData && (lastGameOverData.mode === 'solo' || lastGameOverData.mode === 'daily_solo')) || currentMode === 'solo' || currentMode === 'daily_solo';
     
     if (isSolo) {
-      const modeLabel = (lastGameOverData && lastGameOverData.mode === 'daily_solo') || currentMode === 'daily_solo' ? 'Daily Solo Challenge' : 'Solo-Bolo Challenge';
+      const isDaily = (lastGameOverData && lastGameOverData.mode === 'daily_solo') || currentMode === 'daily_solo';
+      const modeKey = isDaily ? 'daily_solo' : 'solo';
+      const modeLabel = isDaily ? (t('sharedResultDailyTitle') || 'Daily Solo Challenge') : (t('sharedResultSoloTitle') || 'Solo-Bolo Challenge');
       const score = (lastGameOverData && lastGameOverData.soloPoints) ? lastGameOverData.soloPoints : (soloPoints ? soloPoints.innerText : 0);
-      shareText = `⚔️ RIFT POSSESSION (${modeLabel})\n👑 Final Score: ${score} Points | 37/37 Hexes Cleared!\nPlay now: ${window.location.origin}`;
+      const urlParams = new URLSearchParams();
+      urlParams.set('result', '1');
+      urlParams.set('mode', modeKey);
+      urlParams.set('score', String(score));
+      directResultUrl = `${window.location.origin}/?${urlParams.toString()}`;
+
+      shareText = `⚔️ RIFT POSSESSION (${modeLabel})\n👑 Score: ${score} Points | 37/37 Hexes Cleared!\n🔗 View Result & Play: ${directResultUrl}`;
     } else {
       const p1 = (lastGameOverData && lastGameOverData.p1Score !== undefined) ? lastGameOverData.p1Score : (p1Score ? p1Score.innerText : 0);
       const p2 = (lastGameOverData && lastGameOverData.p2Score !== undefined) ? lastGameOverData.p2Score : (p2Score ? p2Score.innerText : 0);
-      const outcome = (lastGameOverData && lastGameOverData.winner === 0) ? '🤝 DRAW' : 
-                      ((lastGameOverData && lastGameOverData.winner === 1) ? '🔵 BLUE SIDE WINS' : '🔴 RED SIDE WINS');
-      shareText = `⚔️ RIFT POSSESSION Match Results\n${outcome}\n🔵 Blue Side: ${p1} Hexes vs 🔴 Red Side: ${p2} Hexes\nPlay now: ${window.location.origin}`;
+      const winner = (lastGameOverData && lastGameOverData.winner !== undefined) ? lastGameOverData.winner : (p1 > p2 ? 1 : (p2 > p1 ? 2 : 0));
+      const outcome = winner === 0 ? '🤝 DRAW' : (winner === 1 ? '🔵 BLUE SIDE WINS' : '🔴 RED SIDE WINS');
+
+      const urlParams = new URLSearchParams();
+      urlParams.set('result', '1');
+      urlParams.set('mode', 'duel');
+      urlParams.set('winner', String(winner));
+      urlParams.set('p1', String(p1));
+      urlParams.set('p2', String(p2));
+      directResultUrl = `${window.location.origin}/?${urlParams.toString()}`;
+
+      shareText = `⚔️ RIFT POSSESSION Match Results\n🏆 Outcome: ${outcome}\n🔵 Blue Side: ${p1} Hexes vs 🔴 Red Side: ${p2} Hexes\n🔗 View Outcome & Duel: ${directResultUrl}`;
     }
 
     let shared = false;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Rift Possession',
+          title: 'Rift Possession Results',
           text: shareText,
-          url: window.location.origin
+          url: directResultUrl
         });
         shared = true;
       } catch (err) {
@@ -3782,6 +3845,99 @@ if (langSelect) {
   });
 }
 
+function openSharedResultModal(params) {
+  if (!sharedResultModal) return;
+  const lang = currentLanguage || 'en';
+  const t = (k) => (TRANSLATIONS[lang] && TRANSLATIONS[lang][k]) || (TRANSLATIONS['en'] && TRANSLATIONS['en'][k]) || '';
+
+  const mode = params.get('mode') || 'duel';
+  const isSolo = mode === 'solo' || mode === 'daily_solo';
+
+  if (isSolo) {
+    const isDaily = mode === 'daily_solo';
+    const score = params.get('score') || '0';
+    if (sharedResultBadge) sharedResultBadge.innerText = t('sharedResultModalBadge') || 'MATCH OUTCOME';
+    if (sharedResultTitle) sharedResultTitle.innerText = isDaily ? (t('sharedResultDailyTitle') || 'DAILY SOLO CHALLENGE') : (t('sharedResultSoloTitle') || 'SOLO-BOLO CHALLENGE');
+    if (sharedResultSubtitle) sharedResultSubtitle.innerText = isDaily ? "Today's Worldwide Challenge Result" : "Single Player High Score Run";
+    if (sharedHeroIcon) sharedHeroIcon.innerText = '👑';
+    if (sharedHeroHeadline) {
+      sharedHeroHeadline.innerText = `${score} PTS`;
+      sharedHeroHeadline.style.color = '#fde047';
+    }
+    if (sharedHeroDetails) sharedHeroDetails.innerText = t('sharedResultCleared') || '37/37 Hexes Cleared';
+    if (sharedResultTags) {
+      sharedResultTags.innerHTML = `
+        <span class="shared-tag-pill">${isDaily ? 'DAILY GRID' : 'SOLO-BOLO'}</span>
+        <span class="shared-tag-pill">SCORE: ${score}</span>
+        <span class="shared-tag-pill">37 HEXES</span>
+      `;
+    }
+  } else {
+    const winner = parseInt(params.get('winner'), 10) || 0;
+    const p1 = params.get('p1') || '0';
+    const p2 = params.get('p2') || '0';
+
+    if (sharedResultBadge) sharedResultBadge.innerText = t('sharedResultModalBadge') || 'MATCH OUTCOME';
+    if (sharedResultTitle) sharedResultTitle.innerText = t('sharedResultDuelTitle') || 'RIFT DUEL';
+    if (sharedResultSubtitle) sharedResultSubtitle.innerText = "2-Player Match Outcome";
+
+    if (winner === 1) {
+      if (sharedHeroIcon) sharedHeroIcon.innerText = '🔵';
+      if (sharedHeroHeadline) {
+        sharedHeroHeadline.innerText = t('sharedResultWinnerBlue') || 'BLUE SIDE VICTORY';
+        sharedHeroHeadline.style.color = '#38bdf8';
+      }
+    } else if (winner === 2) {
+      if (sharedHeroIcon) sharedHeroIcon.innerText = '🔴';
+      if (sharedHeroHeadline) {
+        sharedHeroHeadline.innerText = t('sharedResultWinnerRed') || 'RED SIDE VICTORY';
+        sharedHeroHeadline.style.color = '#f43f5e';
+      }
+    } else {
+      if (sharedHeroIcon) sharedHeroIcon.innerText = '🤝';
+      if (sharedHeroHeadline) {
+        sharedHeroHeadline.innerText = t('sharedResultDraw') || 'STALEMATE DRAW';
+        sharedHeroHeadline.style.color = '#facc15';
+      }
+    }
+
+    if (sharedHeroDetails) {
+      sharedHeroDetails.innerText = `Blue Side: ${p1} Hexes  vs  Red Side: ${p2} Hexes`;
+    }
+
+    if (sharedResultTags) {
+      sharedResultTags.innerHTML = `
+        <span class="shared-tag-pill">BLUE: ${p1} HEXES</span>
+        <span class="shared-tag-pill">RED: ${p2} HEXES</span>
+      `;
+    }
+  }
+
+  sharedResultModal.classList.remove('hidden');
+}
+
+function closeSharedResultModal() {
+  if (sharedResultModal) sharedResultModal.classList.add('hidden');
+}
+
+if (btnCloseSharedResult) {
+  btnCloseSharedResult.addEventListener('click', closeSharedResultModal);
+}
+
+if (btnSharedPlayNow) {
+  btnSharedPlayNow.addEventListener('click', () => {
+    closeSharedResultModal();
+    // Scroll or focus on mode selection
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+if (sharedResultModal) {
+  sharedResultModal.addEventListener('click', (e) => {
+    if (e.target === sharedResultModal) closeSharedResultModal();
+  });
+}
+
 // Auto-display modal and initialize language when a player arrives at the mode selection screen
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize saved or default language
@@ -3808,9 +3964,16 @@ window.addEventListener('DOMContentLoaded', () => {
     openHowToPlayModal();
   }
 
-  // Check URL parameters for direct friend room join link (e.g. ?room=RIFT84)
+  // Check URL parameters for direct friend room join link (e.g. ?room=RIFT84) or shared game result (?result=1)
   try {
     const urlParams = new URLSearchParams(window.location.search);
+
+    // 1. Direct Shared Game Result Link
+    if (urlParams.get('result') === '1') {
+      openSharedResultModal(urlParams);
+    }
+
+    // 2. Direct Room Join Link
     const roomParam = urlParams.get('room');
     if (roomParam) {
       const cleanCode = roomParam.trim().toUpperCase();
@@ -3825,6 +3988,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
   } catch (err) {
-    console.error('Failed to parse URL query room param:', err);
+    console.error('Failed to parse URL query params:', err);
   }
 });

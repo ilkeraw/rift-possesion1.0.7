@@ -1372,8 +1372,7 @@ io.on('connection', (socket) => {
         penalty: penaltyInfo
       });
       if (isSolo) {
-        // Solo mode keeps player on their turn
-        startTurnTimer(room);
+        // Solo mode keeps player on their turn without resetting the timer
       } else {
         passTurn(room, reason);
       }
