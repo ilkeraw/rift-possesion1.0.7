@@ -1,0 +1,22 @@
+{
+  "name": "Rift Possession - LoL Grid Strategy",
+  "short_name": "Rift Possession",
+  "description": "Claim hex criteria with League of Legends champions in a strategic territory battle.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060913",
+  "theme_color": "#091428",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/icons/icon-rp.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/rp-crest.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

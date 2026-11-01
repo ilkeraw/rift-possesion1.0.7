@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Cyber rabbit ears -->
+  <path d="M22 36 L16 10 C16 6 24 6 26 12 L28 34 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <path d="M42 36 L48 10 C48 6 40 6 38 12 L36 34 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <!-- Headgear visor -->
+  <polygon points="18,36 46,36 42,54 22,54" fill="#0f172a" stroke="#ec4899" stroke-width="2.5"/>
+  <line x1="22" y1="44" x2="42" y2="44" stroke="#f472b6" stroke-width="3"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Jagged pumpkin -->
+  <circle cx="32" cy="34" r="24" fill="#78350f" stroke="#f97316" stroke-width="3"/>
+  <path d="M30 6 L34 6 L32 14 Z" fill="#15803d" stroke="#166534" stroke-width="2"/>
+  <!-- Spooky eyes -->
+  <polygon points="22,24 28,30 20,30" fill="#facc15"/>
+  <polygon points="42,24 44,30 36,30" fill="#facc15"/>
+  <!-- Jagged mouth -->
+  <path d="M16 40 L20 44 L24 40 L28 46 L32 40 L36 46 L40 40 L44 44 L48 40" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round"/>
+</svg>

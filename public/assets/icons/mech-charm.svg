@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="charmGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </radialGradient>
+  </defs>
+  <path d="M20 32 C12 28 6 18 10 12 C16 12 22 20 22 28 Z" fill="#fbcfe8" opacity="0.8"/>
+  <path d="M44 32 C52 28 58 18 54 12 C48 12 42 20 42 28 Z" fill="#fbcfe8" opacity="0.8"/>
+  <path d="M32 54 C26 48 12 36 12 24 C12 16 18 11 25 11 C29 11 31 13 32 16 C33 13 35 11 39 11 C46 11 52 16 52 24 C52 36 38 48 32 54 Z" fill="url(#charmGlow)" stroke="#fdf2f8" stroke-width="2.5"/>
+  <polygon points="32,22 34,26 39,27 35,30 36,35 32,32 28,35 29,30 25,27 30,26" fill="#ffffff"/>
+</svg>

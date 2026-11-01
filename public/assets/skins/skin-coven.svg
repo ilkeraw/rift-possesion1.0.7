@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <circle cx="32" cy="32" r="26" fill="#18181b" stroke="#7e22ce" stroke-width="2.5"/>
+  <!-- Antlers / Horns of the Old Gods -->
+  <path d="M20 22 C14 10 8 14 12 6 C16 10 22 14 26 22 Z" fill="#e9d5ff"/>
+  <path d="M44 22 C50 10 56 14 52 6 C48 10 42 14 38 22 Z" fill="#e9d5ff"/>
+  <!-- Mask with glowing crimson eye -->
+  <polygon points="32,18 40,32 32,54 24,32" fill="#581c87" stroke="#c084fc" stroke-width="2"/>
+  <circle cx="32" cy="32" r="3.5" fill="#ef4444"/>
+</svg>

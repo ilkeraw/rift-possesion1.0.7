@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Cup -->
+  <path d="M14 26 L50 26 L46 50 C46 54 42 56 32 56 C22 56 18 54 18 50 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="2.5"/>
+  <path d="M50 30 C56 30 58 38 50 42" fill="none" stroke="#ea580c" stroke-width="2.5"/>
+  <!-- Heart steam -->
+  <path d="M32 18 C30 14 24 10 28 6 C32 6 32 10 32 14 C32 10 32 6 36 6 C40 10 34 14 32 18 Z" fill="#f43f5e"/>
+</svg>

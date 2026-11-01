@@ -2,114 +2,404 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rift Possession</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rift Possession - LoL Grid Strategy</title>
+  <meta name="description" content="Web-based League of Legends strategic hex territory game. Choose champions matching region, role, skins, and mechanics.">
+  <meta name="theme-color" content="#091428">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rift Possession">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icons/icon-rp.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/rp.svg">
+  <link rel="apple-touch-icon" href="assets/icons/icon-rp.png">
   <link rel="stylesheet" href="style.css">
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
+  <!-- Persistent Cosmic Runeterra Background: Keeps moving continuously across all screens -->
+  <div class="lol-global-cosmic-bg" aria-hidden="true">
+    <div class="lol-cosmic-nebula nebula-1"></div>
+    <div class="lol-cosmic-nebula nebula-2"></div>
+    <div class="lol-magic-mist"></div>
+    <div class="lol-hex-constellation"></div>
+    <div class="lol-star-runes-grid"></div>
+    <div class="lol-runic-circle runic-left"></div>
+    <div class="lol-runic-circle runic-right"></div>
+    <div class="lol-runic-compass"></div>
+  </div>
+
   <div id="app">
     <!-- Screen 1: Start Screen (Game Mode Selection) -->
     <section id="start-screen" class="screen">
+      <!-- Language Selection Dropdown at Top Corner -->
+      <div class="lang-selector-corner">
+        <label for="lang-select" class="lang-label">
+          <span class="lang-globe-icon">🌐</span>
+        </label>
+        <select id="lang-select" class="lang-dropdown" aria-label="Select Language">
+          <option value="en">English (EN)</option>
+          <option value="tr">Türkçe (TR)</option>
+          <option value="ko">한국어 (KO)</option>
+        </select>
+      </div>
+
       <div class="lobby-card">
         <div class="lobby-brand">
-          <div class="lobby-badge">LOL GRID STRATEGY</div>
-          <h1 class="lobby-title">RIFT POSSESSION</h1>
-          <p class="lobby-subtitle">Claim hex criteria with League of Legends champions</p>
+          <div class="lobby-badge" data-i18n="lobbyBadge">LOL GRID STRATEGY</div>
+          <h1 class="lobby-title" data-i18n="lobbyTitle">RIFT POSSESSION</h1>
+          <p class="lobby-subtitle" data-i18n="lobbySubtitle">Claim hex criteria with League of Legends champions</p>
+          <button id="btn-how-to-play" class="guide-trigger-btn" type="button">
+            <span class="guide-btn-icon">📖</span> <span data-i18n="howToPlayBtn">HOW TO PLAY & RULES</span>
+          </button>
         </div>
 
         <div class="mode-selection-grid">
           <button class="mode-card-btn" id="btn-mode-same-screen">
             <div class="mode-icon">⚔️</div>
             <div class="mode-info">
-              <span class="mode-title">Same Screen</span>
-              <span class="mode-desc">2 Players take turns on this single device</span>
+              <span class="mode-title" data-i18n="modeSameScreenTitle">Same Screen</span>
+              <span class="mode-desc" data-i18n="modeSameScreenDesc">2 Players take turns on this single device</span>
             </div>
           </button>
 
           <button class="mode-card-btn" id="btn-mode-online-summoners">
             <div class="mode-icon">🌐</div>
             <div class="mode-info">
-              <span class="mode-title">Online Summoners</span>
-              <span class="mode-desc">Matchmake with an online opponent with matching options</span>
+              <span class="mode-title" data-i18n="modeOnlineSummonersTitle">Online Summoners</span>
+              <span class="mode-desc" data-i18n="modeOnlineSummonersDesc">Matchmake with an online opponent with matching options</span>
             </div>
           </button>
 
           <button class="mode-card-btn" id="btn-mode-online-friend">
             <div class="mode-icon">👥</div>
             <div class="mode-info">
-              <span class="mode-title">Online With a Friend</span>
-              <span class="mode-desc">Create or enter a custom Room Code to duel</span>
+              <span class="mode-title" data-i18n="modeOnlineFriendTitle">Online With a Friend</span>
+              <span class="mode-desc" data-i18n="modeOnlineFriendDesc">Create or enter a custom Room Code to duel</span>
             </div>
           </button>
 
           <button class="mode-card-btn" id="btn-mode-solo">
             <div class="mode-icon">👑</div>
             <div class="mode-info">
-              <span class="mode-title">Solo-Bolo</span>
-              <span class="mode-desc">Single player high score challenge. Re-claim hexes for combo points!</span>
+              <span class="mode-title" data-i18n="modeSoloTitle">Solo-Bolo</span>
+              <span class="mode-desc" data-i18n="modeSoloDesc">Single player high score challenge. Re-claim hexes for combo points!</span>
+            </div>
+          </button>
+
+          <button class="mode-card-btn daily-mode-card" id="btn-mode-daily-solo">
+            <div class="mode-icon">📅</div>
+            <div class="mode-info">
+              <span class="mode-title" data-i18n="modeDailySoloTitle">Daily Solo Challenge</span>
+              <span class="mode-desc" data-i18n="modeDailySoloDesc">Identical daily hex board worldwide! Compete for the top leaderboard.</span>
             </div>
           </button>
         </div>
       </div>
+
+      <!-- League / Hextech Integrated Footer Section -->
+      <footer class="start-screen-footer hextech-footer">
+        <div class="footer-hextech-divider">
+          <span class="rune-accent left">◆</span>
+          <span class="divider-line"></span>
+          <span class="rune-gem">◈</span>
+          <span class="divider-line"></span>
+          <span class="rune-accent right">◆</span>
+        </div>
+
+        <div class="footer-social-section">
+          <h3 class="footer-social-heading" data-i18n="footerFollowHeading">FOLLOW US FOR MORE GAMES</h3>
+          <div class="footer-social-icons">
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="Discord" title="Discord">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+              </svg>
+            </a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="X (Twitter)" title="X">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="Instagram" title="Instagram">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="TikTok" title="TikTok">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.32a6.34 6.34 0 0 0-.85-.06A6.34 6.34 0 0 0 3.14 15.6a6.34 6.34 0 0 0 6.34 6.34c3.47 0 6.3-2.8 6.34-6.27V9.11a8.16 8.16 0 0 0 4.77 1.52V7.18c-.34 0-.68-.17-1-.49z"/>
+              </svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="YouTube" title="YouTube">
+              <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-bottom-row">
+          <div class="footer-links">
+            <a href="#privacy" id="link-privacy" class="footer-highlight-link" data-i18n="footerPrivacy">Privacy</a>
+            <span class="footer-link-dot">•</span>
+            <a href="#contact" id="link-contact" class="footer-highlight-link" data-i18n="footerContact">Contact</a>
+          </div>
+        </div>
+      </footer>
     </section>
+
+    <!-- Modal 0: How to Play / Guide Modal -->
+    <div id="how-to-play-modal" class="modal-overlay">
+      <div class="modal-card how-to-play-card">
+        <div class="modal-header">
+          <div class="modal-badge" data-i18n="guideBadge">SUMMONER'S MANUAL</div>
+          <h2 class="modal-title" data-i18n="guideTitle">HOW TO PLAY RIFT POSSESSION</h2>
+          <p class="modal-subtitle" data-i18n="guideSubtitle">Master the 37-hex grid with strategic champion knowledge</p>
+        </div>
+
+        <div class="how-to-play-body">
+          <div class="guide-section">
+            <div class="guide-step-header">
+              <span class="guide-step-num">1</span>
+              <h3 class="guide-step-title" data-i18n="guideStep1Title">Objective & The Hex Grid</h3>
+            </div>
+            <p class="guide-step-text" data-i18n="guideStep1Text">
+              The board consists of <strong>37 hexagonal tiles</strong> arranged in a radius-3 grid. Each hex has a specific category criterion (<strong>Region</strong>, <strong>Role</strong>, <strong>Skin Set</strong>, <strong>Mechanic</strong>, <strong>Species</strong>, <strong>Release Year</strong>, <strong>Resource</strong>, <strong>Range</strong>, or <strong>Gender</strong>). Your goal is to capture more tiles than your rival!
+            </p>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-step-header">
+              <span class="guide-step-num">2</span>
+              <h3 class="guide-step-title" data-i18n="guideStep2Title">How a Turn Works</h3>
+            </div>
+            <ul class="guide-rules-list">
+              <li><strong data-i18n="guideRule1Title">Select a Hex:</strong> <span data-i18n="guideRule1Desc">Click an eligible tile on the grid.</span></li>
+              <li><strong data-i18n="guideRule2Title">Name a Valid Champion:</strong> <span data-i18n="guideRule2Desc">Type any League champion that satisfies that tile's requirement (e.g., Ionia, True Damage, Spirit Blossom, Yordle) and hit Enter or submit.</span></li>
+              <li><strong data-i18n="guideRule3Title">Hex Claimed:</strong> <span data-i18n="guideRule3Desc">The tile is painted in your team's color with the champion's portrait!</span></li>
+            </ul>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-step-header">
+              <span class="guide-step-num">3</span>
+              <h3 class="guide-step-title" data-i18n="guideStep3Title">Special Match Rules (Toggles)</h3>
+            </div>
+            <div class="guide-rules-grid">
+              <div class="guide-rule-card">
+                <div class="rule-card-badge" data-i18n="guideRuleChainingBadge">HEX CHAINING</div>
+                <p data-i18n="guideRuleChainingDesc">When <strong>ON</strong>, after your opening turn you must claim a hex that is <em>adjacent (touching)</em> to your existing claimed territory. When <strong>OFF</strong>, you can pick any tile on the entire board.</p>
+              </div>
+              <div class="guide-rule-card">
+                <div class="rule-card-badge" data-i18n="guideRuleLockingBadge">CHAMPION LOCKING</div>
+                <p data-i18n="guideRuleLockingDesc">When <strong>ON</strong>, once a champion is successfully used anywhere, it is locked and <em>cannot be used again</em> by either player for the rest of the game.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <div class="guide-step-header">
+              <span class="guide-step-num">4</span>
+              <h3 class="guide-step-title" data-i18n="guideStep4Title">Game Modes</h3>
+            </div>
+            <div class="guide-modes-summary">
+              <div class="mode-pill"><span class="pill-icon">⚔️</span> <strong data-i18n="guideModeSameScreenTitle">Same Screen:</strong> <span data-i18n="guideModeSameScreenDesc">Pass-and-play duel on 1 device.</span></div>
+              <div class="mode-pill"><span class="pill-icon">🌐</span> <strong data-i18n="guideModeOnlineSummonersTitle">Online Summoners:</strong> <span data-i18n="guideModeOnlineSummonersDesc">Automatic matchmaking with real players online.</span></div>
+              <div class="mode-pill"><span class="pill-icon">👥</span> <strong data-i18n="guideModeOnlineFriendTitle">Online With a Friend:</strong> <span data-i18n="guideModeOnlineFriendDesc">Enter a custom Room Code to duel a buddy.</span></div>
+              <div class="mode-pill"><span class="pill-icon">👑</span> <strong data-i18n="guideModeSoloTitle">Solo-Bolo:</strong> <span data-i18n="guideModeSoloDesc">Re-claim tiles to stack escalating combo points and set the ultimate high score!</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer how-to-play-footer">
+          <label class="dont-show-checkbox">
+            <input type="checkbox" id="chk-dont-show-again">
+            <span data-i18n="dontShowAgain">Don't show automatically next time</span>
+          </label>
+          <button id="btn-close-how-to-play" class="primary-btn guide-enter-btn" data-i18n="enterTheRiftBtn">ENTER THE RIFT</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Screen 2: Game Options Screen -->
     <section id="options-screen" class="screen hidden">
-      <div class="lobby-card">
-        <div class="lobby-brand">
-          <div class="lobby-badge" id="selected-mode-badge">GAME MODE</div>
-          <h2 class="lobby-title" id="selected-mode-title">GAME OPTIONS</h2>
-          <p class="lobby-subtitle" id="selected-mode-subtitle">Configure match rules before entering the Rift</p>
+      <div class="options-screen-layout" id="options-screen-layout">
+        <div class="lobby-card options-main-card">
+          <div class="lobby-brand">
+            <div class="lobby-badge" id="selected-mode-badge">GAME MODE</div>
+            <h2 class="lobby-title" id="selected-mode-title">GAME OPTIONS</h2>
+            <p class="lobby-subtitle" id="selected-mode-subtitle">Configure match rules before entering the Rift</p>
+          </div>
+
+          <div class="lobby-form">
+            <!-- Nickname input: for Daily Solo Challenge leaderboard ranking -->
+            <div class="form-group hextech-field-group hidden" id="nickname-group">
+              <label for="player-nickname-input" class="hextech-input-label">
+                <span class="label-rune">◈</span>
+                <span data-i18n="nicknameLabel">Summoner Nickname</span>
+              </label>
+              <div class="hextech-input-wrapper">
+                <div class="hextech-input-border">
+                  <span class="corner corner-tl"></span>
+                  <span class="corner corner-tr"></span>
+                  <span class="corner corner-bl"></span>
+                  <span class="corner corner-br"></span>
+                  <span class="input-icon">⚔️</span>
+                  <input type="text" id="player-nickname-input" placeholder="ENTER NICKNAME (e.g. Faker)" data-i18n-placeholder="nicknamePlaceholder" maxlength="16" autocomplete="off" spellcheck="false">
+                </div>
+              </div>
+              <p class="form-hint hextech-hint" data-i18n="nicknameHint">Your name will be immortalized on the daily leaderboard upon clearing the Rift!</p>
+            </div>
+
+            <!-- Room Code input: only visible in 'Online With a Friend' mode -->
+            <div class="form-group hidden" id="room-code-group">
+              <div class="friend-mode-tabs">
+                <button type="button" class="friend-tab-btn active" id="tab-create-room" data-i18n="tabCreateRoom">CREATE ROOM</button>
+                <button type="button" class="friend-tab-btn" id="tab-join-room" data-i18n="tabJoinRoom">JOIN WITH CODE</button>
+              </div>
+
+              <!-- Create Room Tab Content -->
+              <div id="panel-create-room" class="friend-panel">
+                <label data-i18n="generatedRoomCodeLabel">Your Room Code</label>
+                <div class="room-input-row generated-code-row">
+                  <input type="text" id="generated-room-code" readonly spellcheck="false" autocomplete="off">
+                  <button type="button" id="btn-regen-code" class="code-action-btn" title="Generate New Code" aria-label="Generate New Code">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                  </button>
+                </div>
+                <p class="form-hint" data-i18n="createRoomHint">A unique room code has been automatically generated for you. Start the lobby to invite your friend!</p>
+              </div>
+
+              <!-- Join Room Tab Content -->
+              <div id="panel-join-room" class="friend-panel hidden">
+                <label for="room-input" data-i18n="roomCodeLabel">Enter Friend's Room Code</label>
+                <div class="room-input-row">
+                  <input type="text" id="room-input" placeholder="PASTE OR ENTER CODE (e.g. RIFT88)" data-i18n-placeholder="roomCodePlaceholder" maxlength="8" autocomplete="off" spellcheck="false">
+                </div>
+                <p class="form-hint" data-i18n="roomCodeHint">Enter the code shared by your friend to join their match or spectate.</p>
+              </div>
+            </div>
+
+            <div class="settings-header">
+              <span data-i18n="matchRulesHeading">Match Rules</span>
+            </div>
+
+            <div class="toggles">
+              <label class="toggle-card">
+                <div class="toggle-header">
+                  <input type="checkbox" id="chain-toggle">
+                  <span class="label-title" data-i18n="hexChainingTitle">Hex Chaining</span>
+                </div>
+                <span class="desc" data-i18n="hexChainingDesc">Continuous path propagation across matches</span>
+              </label>
+
+              <label class="toggle-card">
+                <div class="toggle-header">
+                  <input type="checkbox" id="locking-toggle" checked>
+                  <span class="label-title" data-i18n="champLockingTitle">Champion Locking</span>
+                </div>
+                <span class="desc" data-i18n="champLockingDesc">Locked champions cannot be reused</span>
+              </label>
+
+              <div class="toggle-card timer-select-card">
+                <span class="label-title" data-i18n="turnTimerTitle">Turn Timer</span>
+                <select id="timer-select">
+                  <option value="30" data-i18n="timer30s">30 Seconds</option>
+                  <option value="60" data-i18n="timer60s">1 Minute</option>
+                  <option value="0" data-i18n="timerUnlimited">Unlimited</option>
+                </select>
+                <span class="desc" data-i18n="turnTimerDesc">Time allowed per turn</span>
+              </div>
+            </div>
+
+            <p id="options-status" class="form-hint"></p>
+
+            <div class="options-actions-row">
+              <button id="options-back-btn" class="secondary-btn" data-i18n="backBtn">← BACK</button>
+              <button id="options-start-btn" class="primary-btn" data-i18n="startGameBtn">START GAME</button>
+            </div>
+          </div>
         </div>
 
-        <div class="lobby-form">
-          <!-- Room Code input: only visible in 'Online With a Friend' mode -->
-          <div class="form-group hidden" id="room-code-group">
-            <label for="room-input">Room Code</label>
-            <div class="room-input-row">
-              <input type="text" id="room-input" placeholder="ENTER ROOM CODE (e.g. DUEL7)" maxlength="8" autocomplete="off" spellcheck="false">
+        <!-- Right-side Daily Solo Leaderboard Card (Visible in Daily Solo mode) -->
+        <aside class="lobby-card daily-leaderboard-sidebar hidden" id="daily-leaderboard-sidebar">
+          <div class="leaderboard-brand">
+            <div class="leaderboard-badge" data-i18n="dailyLeaderboardBadge">DAILY RANKINGS</div>
+            <h3 class="leaderboard-title" data-i18n="dailyLeaderboardTitle">TODAY'S RIFT LEGENDS</h3>
+            <span class="leaderboard-date-pill" id="leaderboard-current-date">TODAY</span>
+          </div>
+
+          <div class="leaderboard-table-container">
+            <div class="leaderboard-header-row">
+              <span class="col-rank" data-i18n="colRank">#</span>
+              <span class="col-summoner" data-i18n="colSummoner">SUMMONER</span>
+              <span class="col-score" data-i18n="colScore">SCORE</span>
+              <span class="col-time" data-i18n="colTime">TIME</span>
             </div>
-            <p class="form-hint">Both players must write the same room code and pick the same settings.</p>
-          </div>
-
-          <div class="settings-header">
-            <span>Match Rules</span>
-          </div>
-
-          <div class="toggles">
-            <label class="toggle-card">
-              <div class="toggle-header">
-                <input type="checkbox" id="chain-toggle">
-                <span class="label-title">Hex Chaining</span>
-              </div>
-              <span class="desc">Continuous path propagation across matches</span>
-            </label>
-
-            <label class="toggle-card">
-              <div class="toggle-header">
-                <input type="checkbox" id="locking-toggle" checked>
-                <span class="label-title">Champion Locking</span>
-              </div>
-              <span class="desc">Locked champions cannot be reused</span>
-            </label>
-
-            <div class="toggle-card timer-select-card">
-              <span class="label-title">Turn Timer</span>
-              <select id="timer-select">
-                <option value="30">30 Seconds</option>
-                <option value="60">1 Minute</option>
-                <option value="0">Unlimited</option>
-              </select>
-              <span class="desc">Time allowed per turn</span>
+            <div class="leaderboard-rows-list" id="leaderboard-rows-list">
+              <div class="leaderboard-empty" data-i18n="leaderboardEmpty">No scores recorded yet today. Be the first to conquer the Rift!</div>
             </div>
           </div>
 
-          <p id="options-status" class="form-hint"></p>
+          <div class="leaderboard-footer-note" data-i18n="leaderboardResetNote">Resets daily at 00:00 UTC with an identical grid worldwide.</div>
+        </aside>
+      </div>
+    </section>
 
-          <div class="options-actions-row">
-            <button id="options-back-btn" class="secondary-btn">← BACK</button>
-            <button id="options-start-btn" class="primary-btn">START GAME</button>
+    <!-- Intermediate Waiting Screen: Online with a Friend Lobby -->
+    <section id="friend-waiting-screen" class="screen hidden">
+      <div class="lobby-card friend-waiting-card">
+        <div class="lobby-brand">
+          <div class="lobby-badge" data-i18n="waitingBadge">MATCH LOBBY</div>
+          <h2 class="lobby-title" data-i18n="waitingTitle">SUMMONING RIVAL</h2>
+          <p class="lobby-subtitle" data-i18n="waitingSubtitle">Share your room code or direct link with a friend to begin</p>
+        </div>
+
+        <div class="waiting-lobby-content">
+          <!-- Room Code Display Card -->
+          <div class="waiting-code-display">
+            <span class="waiting-code-label" data-i18n="waitingRoomCodeLabel">ROOM CODE</span>
+            <div class="waiting-code-value" id="waiting-display-code">------</div>
+            <button type="button" id="btn-copy-room-code" class="action-pill-btn" data-i18n="btnCopyCode">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+              </svg>
+              <span>Copy Code</span>
+            </button>
+          </div>
+
+          <!-- Share Direct Link Button -->
+          <div class="waiting-share-box">
+            <button type="button" id="btn-share-invite-link" class="share-invite-btn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+              </svg>
+              <span data-i18n="btnShareInviteLink">SHARE INVITE LINK</span>
+            </button>
+            <span id="share-copy-toast" class="share-toast hidden">Link copied to clipboard!</span>
+          </div>
+
+          <!-- Waiting Status Animated Pill -->
+          <div class="waiting-pulse-status">
+            <div class="pulse-ring-container">
+              <span class="pulse-ring"></span>
+              <span class="pulse-dot-center"></span>
+            </div>
+            <span class="waiting-status-text" data-i18n="waitingPlayerStatus">Waiting for Player 2 to join... (1/2)</span>
+          </div>
+
+          <!-- Rules Summary Pill -->
+          <div class="waiting-rules-summary" id="waiting-rules-summary">
+            <!-- Populated via JS: Chaining: ON | Locking: ON | Timer: 30s -->
+          </div>
+
+          <!-- Cancel / Back -->
+          <div class="waiting-actions-row">
+            <button type="button" id="waiting-cancel-btn" class="secondary-btn" data-i18n="waitingCancelBtn">← LEAVE LOBBY</button>
           </div>
         </div>
       </div>
@@ -124,13 +414,22 @@
         </div>
 
         <div id="status-panel">
-          <h2 id="turn-announcement">Waiting for match...</h2>
+          <div class="status-top-row">
+            <h2 id="turn-announcement">Waiting for match...</h2>
+            <div id="timer-numeric" class="timer-numeric-pill">--</div>
+          </div>
           <div id="timer-bar"><div id="timer-progress"></div></div>
           <p id="system-msg">Waiting for opponent to connect...</p>
         </div>
 
         <div class="header-right">
-          <button id="btn-leave-game" class="header-mini-btn">MENU</button>
+          <button id="btn-reopen-endgame" class="header-mini-btn endgame-btn hidden" title="Reopen match end options" data-i18n="headerBtnMatchOptions">MATCH OPTIONS</button>
+          <div class="menu-btn-wrapper">
+            <button id="btn-leave-game" class="header-mini-btn">MENU</button>
+            <div id="menu-restart-badge" class="menu-restart-notification hidden">
+              <span class="pulse-dot"></span> Opponent wants to restart
+            </div>
+          </div>
           <div class="status-indicator-live"><span class="dot"></span> LIVE MATCH</div>
         </div>
       </header>
@@ -165,9 +464,10 @@
           <div id="selected-criteria-display">Selected: <em>None</em></div>
           <div class="input-row">
             <div class="input-wrapper">
-              <input type="text" id="champ-input" placeholder="Type Champion name to claim hex..." disabled autocomplete="off">
+              <input type="text" id="champ-input" placeholder="Type Champion name to claim hex..." disabled autocomplete="off" spellcheck="false">
               <div id="autocomplete-list" class="autocomplete-list hidden"></div>
             </div>
+            <button id="submit-btn" class="input-submit-btn" disabled>CLAIM</button>
           </div>
         </div>
 
@@ -190,6 +490,227 @@
         </div>
       </footer>
     </section>
+
+    <!-- Modal 1: End Game Options Screen Modal -->
+    <div id="endgame-modal" class="modal-overlay hidden">
+      <div class="modal-card endgame-card">
+        <div class="modal-header">
+          <div class="modal-badge" id="endgame-badge" data-i18n="endgameVictory">VICTORY</div>
+          <h2 class="modal-title" id="endgame-title" data-i18n="endgameMatchCompleted">MATCH COMPLETED</h2>
+          <p class="modal-subtitle" id="endgame-subtitle" data-i18n="endgameChooseNextStep">Choose your next step</p>
+        </div>
+
+        <!-- 2-Player Score Summary -->
+        <div class="endgame-score-summary" id="endgame-score-summary">
+          <div class="endgame-player p1-summary">
+            <span class="endgame-player-name" id="endgame-p1-title" data-i18n="p1Title">BLUE SIDE</span>
+            <span class="endgame-player-score" id="endgame-p1-score">0</span>
+            <span class="endgame-player-label" data-i18n="endgameHexesLabel">HEXES</span>
+          </div>
+          <div class="endgame-vs" id="endgame-vs-divider">VS</div>
+          <div class="endgame-player p2-summary" id="endgame-p2-summary">
+            <span class="endgame-player-name" id="endgame-p2-title" data-i18n="p2Title">RED SIDE</span>
+            <span class="endgame-player-score" id="endgame-p2-score">0</span>
+            <span class="endgame-player-label" data-i18n="endgameHexesLabel">HEXES</span>
+          </div>
+        </div>
+
+        <!-- Solo-Bolo Summary -->
+        <div class="endgame-solo-summary hidden" id="endgame-solo-summary">
+          <div class="endgame-solo-stat">
+            <span class="stat-num" id="endgame-solo-score">0</span>
+            <span class="stat-lbl" data-i18n="endgameTotalSoloPoints">TOTAL SOLO POINTS</span>
+          </div>
+          <div class="endgame-solo-divider"></div>
+          <div class="endgame-solo-stat">
+            <span class="stat-num" id="endgame-solo-hexes">37/37</span>
+            <span class="stat-lbl" data-i18n="endgameHexesClaimed">HEXES CLAIMED</span>
+          </div>
+        </div>
+
+        <!-- Rematch Status Notification -->
+        <div id="rematch-status-banner" class="rematch-banner hidden">
+          <span id="rematch-status-text">Waiting for opponent to accept rematch... (1/2)</span>
+        </div>
+
+        <!-- End Game Action Options -->
+        <div class="endgame-options-grid">
+          <button id="btn-endgame-rematch" class="endgame-action-btn primary-action">
+            <span class="btn-icon">🔄</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnRematch">Rematch</span>
+              <span class="btn-sub" id="rematch-sub-label" data-i18n="endgameRematchSub">Play again with current rules (Both players must accept)</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-best-champs" class="endgame-action-btn">
+            <span class="btn-icon">⭐</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnBestChamps">Best Champions</span>
+              <span class="btn-sub" id="best-champs-sub-label" data-i18n="endgameBestChampsSub">Ranked optimal champions for this exact board & rules</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-statistics" class="endgame-action-btn">
+            <span class="btn-icon">📊</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnStatistics">Statistics</span>
+              <span class="btn-sub" data-i18n="endgameStatisticsSub">Hex control, champion pool, retakes, and tactical data</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-review" class="endgame-action-btn">
+            <span class="btn-icon">🔍</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnReview">Review</span>
+              <span class="btn-sub" data-i18n="endgameReviewSub">Inspect the map, tiles, and captured territory freely</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-share" class="endgame-action-btn share-action">
+            <span class="btn-icon">📤</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnShare">Share Results</span>
+              <span class="btn-sub" id="endgame-share-sub" data-i18n="endgameShareSub">Copy your match results & board score to share</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-leaderboard" class="endgame-action-btn leaderboard-action">
+            <span class="btn-icon">🏆</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnLeaderboard">Daily Leaderboard</span>
+              <span class="btn-sub" data-i18n="endgameLeaderboardSub">View today's top worldwide solo rankings</span>
+            </div>
+          </button>
+
+          <button id="btn-endgame-menu" class="endgame-action-btn danger-action">
+            <span class="btn-icon">🏠</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="endgameBtnMenu">Back to the Menu</span>
+              <span class="btn-sub" data-i18n="endgameMenuSub">Exit session and return to game modes</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Best / Optimal Champions Modal -->
+    <div id="best-champs-modal" class="modal-overlay hidden">
+      <div class="modal-card best-champs-card">
+        <div class="modal-header">
+          <div class="modal-badge" data-i18n="bestChampsBadge">TACTICAL INTEL</div>
+          <h2 class="modal-title" data-i18n="bestChampsTitle">OPTIMAL CHAMPIONS</h2>
+          <p class="modal-subtitle" id="best-champs-rules-note">Computed based on current board and active rules (Hex Chaining: ON/OFF)</p>
+        </div>
+
+        <div class="modal-filter-bar">
+          <input type="text" id="best-champs-search" placeholder="Search champion name..." data-i18n-placeholder="bestChampsSearchPlaceholder" autocomplete="off">
+          <span class="search-count" id="best-champs-count">Showing optimal champions</span>
+        </div>
+
+        <div class="best-champs-list" id="best-champs-list">
+          <!-- Filled dynamically via JS -->
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-close-best-champs" class="primary-btn" data-i18n="closeReturnBtn">CLOSE & RETURN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: In-Depth Match Statistics Modal -->
+    <div id="statistics-modal" class="modal-overlay hidden">
+      <div class="modal-card statistics-card">
+        <div class="modal-header">
+          <div class="modal-badge" data-i18n="statsBadge">POST-MATCH REPORT</div>
+          <h2 class="modal-title" data-i18n="statsTitle">MATCH STATISTICS</h2>
+          <p class="modal-subtitle" data-i18n="statsSubtitle">Comparative performance & tactical analytics</p>
+        </div>
+
+        <div class="stats-modal-body" id="stats-modal-body">
+          <div class="stats-overview-grid" id="stats-overview-grid">
+            <!-- Dynamic cards for Blue Side vs Red Side -->
+          </div>
+
+          <div class="stats-section-title" data-i18n="statsSectionChamps">CHAMPIONS DRAFTED & PLAYED</div>
+          <div class="stats-champs-comparison" id="stats-champs-comparison">
+            <!-- Dynamic lists of champions written by each player -->
+          </div>
+
+          <div class="stats-section-title" data-i18n="statsSectionHighlights">TACTICAL HIGHLIGHTS</div>
+          <div class="stats-highlights" id="stats-highlights">
+            <!-- Creative awards / highlights (e.g. Hex Reclaimer, Hex Sniper, Speed Demon) -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-close-statistics" class="primary-btn" data-i18n="closeReturnBtn">CLOSE & RETURN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: In-Game Pause / Menu Modal -->
+    <div id="game-menu-modal" class="modal-overlay hidden">
+      <div class="modal-card game-menu-card">
+        <div class="modal-header">
+          <div class="modal-badge" data-i18n="menuBadge">GAME MENU</div>
+          <h2 class="modal-title" data-i18n="menuTitle">MATCH PAUSED</h2>
+          <p class="modal-subtitle" data-i18n="menuSubtitle">Choose an action</p>
+        </div>
+
+        <div class="game-menu-body">
+          <button id="btn-menu-resume" class="endgame-action-btn primary-action">
+            <span class="btn-icon">▶️</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="menuResumeMain">Return to the Game</span>
+              <span class="btn-sub" data-i18n="menuResumeSub">Resume current match and continue playing</span>
+            </div>
+          </button>
+
+          <button id="btn-menu-restart" class="endgame-action-btn">
+            <span class="btn-icon">🔄</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="menuRestartMain">Restart</span>
+              <span class="btn-sub" id="menu-restart-sub" data-i18n="menuRestartSub">Restart match with a new board and current rules</span>
+            </div>
+          </button>
+
+          <button id="btn-menu-exit" class="endgame-action-btn danger-action">
+            <span class="btn-icon">🚪</span>
+            <div class="btn-text">
+              <span class="btn-main" data-i18n="menuExitMain">Return to the Menu</span>
+              <span class="btn-sub" data-i18n="menuExitSub">Leave this arena and return to mode selection</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Modal 5: Daily Leaderboard Modal (Accessible from Endgame and elsewhere) -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+      <div class="modal-card leaderboard-modal-card">
+        <div class="modal-header">
+          <div class="modal-badge" data-i18n="dailyLeaderboardBadge">DAILY RANKINGS</div>
+          <h2 class="modal-title" data-i18n="dailyLeaderboardTitle">TODAY'S RIFT LEGENDS</h2>
+          <p class="modal-subtitle" id="modal-leaderboard-date">DAILY TOP 100 PLAYERS</p>
+        </div>
+
+        <div class="leaderboard-table-container modal-table">
+          <div class="leaderboard-header-row">
+            <span class="col-rank" data-i18n="colRank">#</span>
+            <span class="col-summoner" data-i18n="colSummoner">SUMMONER</span>
+            <span class="col-score" data-i18n="colScore">SCORE</span>
+            <span class="col-time" data-i18n="colTime">TIME</span>
+          </div>
+          <div class="leaderboard-rows-list" id="modal-leaderboard-rows">
+            <div class="leaderboard-empty" data-i18n="leaderboardEmpty">No scores recorded yet today. Be the first to conquer the Rift!</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-close-leaderboard" class="primary-btn" data-i18n="closeReturnBtn">CLOSE & RETURN</button>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>

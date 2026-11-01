@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <polygon points="32,6 52,18 46,48 32,58 18,48 12,18" fill="#1e3a8a" stroke="#facc15" stroke-width="3"/>
+  <path d="M32 14 L42 22 L38 44 L32 50 L26 44 L22 22 Z" fill="#dc2626"/>
+  <!-- Lightning bolt -->
+  <polygon points="34,18 24,32 32,32 30,44 40,30 32,30" fill="#facc15"/>
+</svg>

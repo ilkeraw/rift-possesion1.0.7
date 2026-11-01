@@ -1,0 +1,24 @@
+const fs = require('fs');
+const path = require('path');
+
+const reviveSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="revGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </radialGradient>
+  </defs>
+  <!-- Angelic wings of resurrection -->
+  <path d="M12 36 C8 24 14 12 24 16 C20 22 20 28 22 36 Z" fill="#fef08a" stroke="#eab308" stroke-width="1.5"/>
+  <path d="M52 36 C56 24 50 12 40 16 C44 22 44 28 42 36 Z" fill="#fef08a" stroke="#eab308" stroke-width="1.5"/>
+  <!-- Radiant halo -->
+  <ellipse cx="32" cy="14" rx="14" ry="4" fill="none" stroke="#fef08a" stroke-width="2.5"/>
+  <!-- Ankh / Life Cross -->
+  <circle cx="32" cy="28" r="8" fill="none" stroke="url(#revGlow)" stroke-width="3.5"/>
+  <line x1="32" y1="36" x2="32" y2="56" stroke="url(#revGlow)" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="22" y1="42" x2="42" y2="42" stroke="url(#revGlow)" stroke-width="3.5" stroke-linecap="round"/>
+</svg>`;
+
+fs.writeFileSync(path.join(__dirname, 'public', 'assets', 'icons', 'mech-revive.svg'), reviveSvg.trim(), 'utf8');
+console.log('Created mech-revive.svg');

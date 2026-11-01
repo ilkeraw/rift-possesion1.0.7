@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Blood Moon sphere -->
+  <circle cx="32" cy="32" r="26" fill="#450a0a" stroke="#dc2626" stroke-width="3"/>
+  <circle cx="28" cy="28" r="22" fill="#991b1b"/>
+  <!-- Oni horns and mask marking -->
+  <path d="M14 18 Q20 8 26 12 Q24 20 20 24 Z" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+  <path d="M50 18 Q44 8 38 12 Q40 20 44 24 Z" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+  <!-- Mask face -->
+  <path d="M22 26 L42 26 L38 48 L32 54 L26 48 Z" fill="#ffffff"/>
+  <polygon points="26,32 30,34 26,36" fill="#991b1b"/>
+  <polygon points="38,32 34,34 38,36" fill="#991b1b"/>
+  <polygon points="32,40 28,46 36,46" fill="#dc2626"/>
+</svg>
