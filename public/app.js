@@ -1393,14 +1393,124 @@ function generateRandomRoomCode() {
   return result;
 }
 
-let activeFriendRoomCode = '';
+// Device detection & responsive styling helpers
+function initDeviceOptimization() {
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
+  const isMobile = window.innerWidth <= 768 || isTouch;
+  
+  if (isMobile) {
+    document.body.classList.add('device-mobile');
+    document.body.classList.remove('device-pc');
+  } else {
+    document.body.classList.add('device-pc');
+    document.body.classList.remove('device-mobile');
+  }
+}
 
-// Screen Navigation Helpers
-function showScreen(screenEl) {
+window.addEventListener('resize', () => {
+  initDeviceOptimization();
+});
+initDeviceOptimization();
+
+// Handle Browser Back / Forward buttons (popstate)
+window.addEventListener('popstate', (e) => {
+  isPopStateNavigation = true;
+  try {
+    const pathname = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+    const roomParam = urlParams.get('room') || urlParams.get('code');
+
+    if (pathname === '/game') {
+      if (gameActive) {
+        showScreen(gameScreen, { updateHistory: false });
+      } else if (modeParam) {
+        openOptionsMenu(modeParam);
+      } else {
+        showScreen(startScreen, { updateHistory: false });
+      }
+    } else if (pathname === '/room') {
+      if (roomParam) {
+        activeFriendRoomCode = roomParam;
+        showFriendWaitingScreen(roomParam);
+      } else {
+        openOptionsMenu('online_friend');
+      }
+    } else if (pathname === '/lobby') {
+      const mode = modeParam || 'same_screen';
+      openOptionsMenu(mode);
+      if (mode === 'online_friend' && roomParam) {
+        if (roomInput) roomInput.value = roomParam;
+        updateFriendTabs('join');
+      }
+    } else {
+      // Root '/' or others
+      showScreen(startScreen, { updateHistory: false });
+    }
+  } finally {
+    isPopStateNavigation = false;
+  }
+});
+
+// ============================================================================
+// Multi-Route URL Navigation & Device Optimization
+// ============================================================================
+const ROUTES = {
+  START: '/',
+  LOBBY: '/lobby',
+  ROOM: '/room',
+  GAME: '/game'
+};
+
+let isPopStateNavigation = false;
+
+// Screen Navigation Helpers with URL sync
+function showScreen(screenEl, options = {}) {
+  const { updateHistory = true, replace = false, query = {} } = options;
+
   [startScreen, optionsScreen, gameScreen, friendWaitingScreen].forEach(s => {
     if (s) s.classList.add('hidden');
   });
   if (screenEl) screenEl.classList.remove('hidden');
+
+  if (updateHistory && !isPopStateNavigation) {
+    let route = ROUTES.START;
+    const params = new URLSearchParams();
+
+    if (screenEl === optionsScreen) {
+      route = ROUTES.LOBBY;
+      if (currentMode) params.set('mode', currentMode);
+      if (currentMode === 'online_friend' && roomInput && roomInput.value.trim()) {
+        params.set('room', roomInput.value.trim().toUpperCase());
+      }
+    } else if (screenEl === friendWaitingScreen) {
+      route = ROUTES.ROOM;
+      const code = (waitingDisplayCode && waitingDisplayCode.innerText) || activeFriendRoomCode;
+      if (code && code !== '----') params.set('code', code);
+    } else if (screenEl === gameScreen) {
+      route = ROUTES.GAME;
+      if (currentMode) params.set('mode', currentMode);
+      if (activeFriendRoomCode) params.set('room', activeFriendRoomCode);
+    }
+
+    // Merge any explicit extra queries
+    for (const [k, v] of Object.entries(query)) {
+      if (v !== undefined && v !== null && v !== '') {
+        params.set(k, v);
+      }
+    }
+
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const newUrl = `${route}${queryString}`;
+
+    if (window.location.pathname + window.location.search !== newUrl) {
+      if (replace) {
+        history.replaceState({ screenId: screenEl ? screenEl.id : 'start-screen', mode: currentMode }, '', newUrl);
+      } else {
+        history.pushState({ screenId: screenEl ? screenEl.id : 'start-screen', mode: currentMode }, '', newUrl);
+      }
+    }
+  }
 }
 
 function updateFriendTabs(tab) {
@@ -1884,9 +1994,8 @@ function showFriendWaitingScreen(roomCode, settings) {
 }
 
 function getDirectJoinUrl(roomCode) {
-  const url = new URL(window.location.href);
-  url.searchParams.set('room', roomCode);
-  return url.toString();
+  const origin = window.location.origin;
+  return `${origin}/room?code=${encodeURIComponent(roomCode)}`;
 }
 
 if (btnCopyRoomCode) {
@@ -3665,7 +3774,7 @@ if (btnEndgameShare) {
       urlParams.set('result', '1');
       urlParams.set('mode', modeKey);
       urlParams.set('score', String(score));
-      directResultUrl = `${window.location.origin}/?${urlParams.toString()}`;
+      directResultUrl = `${window.location.origin}/game?${urlParams.toString()}`;
 
       shareText = `⚔️ RIFT POSSESSION (${modeLabel})\n👑 Score: ${score} Points | 37/37 Hexes Cleared!\n🔗 View Result & Play: ${directResultUrl}`;
     } else {
@@ -3680,7 +3789,7 @@ if (btnEndgameShare) {
       urlParams.set('winner', String(winner));
       urlParams.set('p1', String(p1));
       urlParams.set('p2', String(p2));
-      directResultUrl = `${window.location.origin}/?${urlParams.toString()}`;
+      directResultUrl = `${window.location.origin}/game?${urlParams.toString()}`;
 
       shareText = `⚔️ RIFT POSSESSION Match Results\n🏆 Outcome: ${outcome}\n🔵 Blue Side: ${p1} Hexes vs 🔴 Red Side: ${p2} Hexes\n🔗 View Outcome & Duel: ${directResultUrl}`;
     }
@@ -3964,30 +4073,53 @@ window.addEventListener('DOMContentLoaded', () => {
     openHowToPlayModal();
   }
 
-  // Check URL parameters for direct friend room join link (e.g. ?room=RIFT84) or shared game result (?result=1)
+  // Route-based initialization: handles deep links & page changes on refresh
   try {
+    const pathname = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+    const roomParam = urlParams.get('room') || urlParams.get('code');
 
     // 1. Direct Shared Game Result Link
     if (urlParams.get('result') === '1') {
       openSharedResultModal(urlParams);
     }
 
-    // 2. Direct Room Join Link
-    const roomParam = urlParams.get('room');
-    if (roomParam) {
-      const cleanCode = roomParam.trim().toUpperCase();
-      if (cleanCode) {
+    // 2. Direct Room Join Link or /room Route
+    if (pathname === '/room' && roomParam) {
+      activeFriendRoomCode = roomParam.trim().toUpperCase();
+      if (roomInput) roomInput.value = activeFriendRoomCode;
+      showFriendWaitingScreen(activeFriendRoomCode);
+    } else if (pathname === '/lobby' || modeParam) {
+      const mode = modeParam || 'same_screen';
+      openOptionsMenu(mode);
+      if (roomParam) {
+        const cleanCode = roomParam.trim().toUpperCase();
         if (roomInput) roomInput.value = cleanCode;
-        openOptionsMenu('online_friend');
-        updateFriendTabs('join');
-        if (optionsStatus) {
-          optionsStatus.innerText = `Invited to Room: ${cleanCode}. Click JOIN MATCH to start!`;
-          optionsStatus.style.color = '#38bdf8';
+        if (mode === 'online_friend') {
+          updateFriendTabs('join');
+          if (optionsStatus) {
+            optionsStatus.innerText = `Invited to Room: ${cleanCode}. Click JOIN MATCH to start!`;
+            optionsStatus.style.color = '#38bdf8';
+          }
         }
+      }
+    } else if (roomParam) {
+      const cleanCode = roomParam.trim().toUpperCase();
+      if (roomInput) roomInput.value = cleanCode;
+      openOptionsMenu('online_friend');
+      updateFriendTabs('join');
+      if (optionsStatus) {
+        optionsStatus.innerText = `Invited to Room: ${cleanCode}. Click JOIN MATCH to start!`;
+        optionsStatus.style.color = '#38bdf8';
+      }
+    } else {
+      // Ensure history state is anchored at root
+      if (pathname !== '/' && pathname !== '/index.html') {
+        history.replaceState({ screenId: 'start-screen' }, '', '/');
       }
     }
   } catch (err) {
-    console.error('Failed to parse URL query params:', err);
+    console.error('Failed to parse URL query params or routes:', err);
   }
 });

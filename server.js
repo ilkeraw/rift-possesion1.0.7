@@ -93,6 +93,14 @@ app.post('/api/leaderboard/daily', (req, res) => {
   res.json({ success: true, leaderboard: allData[dateKey] });
 });
 
+// Single Page Application (SPA) routing fallback: Serve index.html for non-API GET requests
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // 1. COMPREHENSIVE CHAMPION DATASET
 const CHAMPIONS = {
   // Dual-range stance/hybrid champions

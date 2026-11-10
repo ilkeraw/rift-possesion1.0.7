@@ -3559,3 +3559,96 @@ svg#hex-grid {
   justify-content: center;
 }
 
+/* ==========================================================================
+   Dedicated Mobile & PC Optimizations (.device-mobile & .device-pc)
+   ========================================================================== */
+
+/* --- Mobile-Specific Enhancements --- */
+body.device-mobile {
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body.device-mobile button,
+body.device-mobile .mode-card-btn,
+body.device-mobile .toggle-card,
+body.device-mobile .endgame-action-btn,
+body.device-mobile .guide-trigger-btn {
+  min-height: 48px; /* Touch target guidelines */
+  cursor: pointer;
+}
+
+body.device-mobile #board-container {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+body.device-mobile .hex-polygon {
+  cursor: pointer;
+  stroke-width: 2.2px;
+}
+
+body.device-mobile .autocomplete-item {
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+
+body.device-mobile #action-panel {
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+}
+
+body.device-mobile #champ-input {
+  font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+}
+
+/* --- PC & Desktop-Specific Enhancements --- */
+body.device-pc {
+  user-select: auto;
+}
+
+body.device-pc button,
+body.device-pc .mode-card-btn,
+body.device-pc .toggle-card,
+body.device-pc .hex-polygon {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 0.18s ease;
+}
+
+body.device-pc .mode-card-btn:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22);
+}
+
+body.device-pc .toggle-card:not(.readonly):hover {
+  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(30, 41, 59, 0.95);
+  transform: translateY(-1px);
+}
+
+body.device-pc .hex-polygon:hover {
+  filter: brightness(1.28) drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+  cursor: pointer;
+}
+
+body.device-pc .autocomplete-item:hover {
+  background: rgba(56, 189, 248, 0.22);
+  color: #ffffff;
+  padding-left: 18px;
+}
+
+body.device-pc .lobby-card {
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px rgba(56, 189, 248, 0.15);
+}
+
+body.device-pc #game-screen {
+  padding: 10px 24px;
+}
+
+body.device-pc #board-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
